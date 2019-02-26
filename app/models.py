@@ -10,6 +10,9 @@ class File(models.Model):
     cnt_views = models.IntegerField()
     created = models.DateTimeField()
 
+    def __str__(self):
+        return self.filename + ' at ' + self.created.strftime("%Y-%m-%d");
+
     class Meta:
         db_table = 'files'
 
@@ -17,6 +20,9 @@ class File(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=255)
     navigation = models.CharField(max_length=1)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         db_table = 'tags'
