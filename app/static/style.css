@@ -1,0 +1,35 @@
+#tagcloud {
+    /*padding: 20px;*/
+}
+a {
+    /*color: gray;*/
+    padding: 2px;
+    margin: 5px;
+    text-decoration: underline;
+    /*border: 1px solid black;*/
+    cursor: crosshair;
+}
+
+#tagcloud a {
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    width: 75px;
+    height: 34px;
+    margin-right: 2px;
+}
+.tag_selected {
+    color: green;
+    text-shadow: 2px 2px 10px #000000;
+}
+
+#play_sequence_title_section {
+    text-align: center;
+}
+
+.nav {
+    font-size:xx-small; 
+    vertical-align:top;
+}

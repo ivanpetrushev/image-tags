@@ -1,6 +1,7 @@
 <html>
 <head>
-    <link href="/css/style.css" rel="stylesheet" type="text/css"/>
+    {% load static %}
+    <link href="{% static "style.css" %}" rel="stylesheet" type="text/css"/>
 
 </head>
 <body>
@@ -18,8 +19,9 @@
 
 <input type='button' value='Send' onClick='submitCheckboxes();'/>
 
-<script type="text/javascript" src="/js/jquery-2.2.3.min.js"></script>
-<script type="text/javascript" src="/js/functions.js"></script>
-<script type="text/javascript" src="/js/show_stats.js"></script>
+
+<script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}"></script>
+<script type="text/javascript" src="{% static "functions.js" %}"></script>
+<script type="text/javascript" src="{% static "show_stats.js" %}"></script>
 </body>
 </html>
