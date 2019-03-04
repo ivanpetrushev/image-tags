@@ -1,27 +1,27 @@
 <html>
-<head>
-    {% load static %}
-    <link href="{% static "style.css" %}" rel="stylesheet" type="text/css"/>
+    <head>
+        {% load static %}
+        <link href="{% static "style.css" %}" rel="stylesheet" type="text/css"/>
 
-</head>
-<body>
+    </head>
+    <body>
 
-<h1>Top tags</h1>
+        <h1>Top tags</h1>
 
-<a href='/tag/generate_sequence/rand'>Random</a><br/>
+        <a href='/tag/generate_sequence/rand'>Random</a><br/>
 
-{% if tags %}
-    {% for tag in tags %}
-        <input type="checkbox" attr-tag-id="{{ tag.id }}"/> {{ tag.num_tags }} -
-        <a href="/tag/generate_sequence/{{ tag.id }}">{{ tag.name }}</a><br/>
-    {% endfor %}
-{% endif %}
+        {% if tags %}
+            {% for tag in tags %}
+                <input type="checkbox" attr-tag-id="{{ tag.id }}"/> {{ tag.num_tags }} -
+                <a href="/tag/generate_sequence/{{ tag.id }}">{{ tag.name }}</a><br/>
+            {% endfor %}
+        {% endif %}
 
-<input type='button' value='Send' onClick='submitCheckboxes();'/>
+        <input type='button' value='Send' onClick='submitCheckboxes();'/>
 
 
-<script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}"></script>
-<script type="text/javascript" src="{% static "functions.js" %}"></script>
-<script type="text/javascript" src="{% static "show_stats.js" %}"></script>
-</body>
+        <script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "functions.js" %}"></script>
+        <script type="text/javascript" src="{% static "show_stats.js" %}"></script>
+    </body>
 </html>
