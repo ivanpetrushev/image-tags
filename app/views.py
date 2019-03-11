@@ -1,14 +1,18 @@
+import mimetypes
+from datetime import datetime
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Tag, File, FileTag
 from django.db.models import Count
 from django.template import loader
 from random import randint, shuffle
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
 
 def tag(request):
+    return render(request, 'app/tag.html')
     return HttpResponse('tag index')
 
 
@@ -42,26 +46,52 @@ def toggle(request, file_id, tag_id):
         FileTag.objects.filter(tag_id=tag_id, file_id=file_id).delete()
     else:
         FileTag(tag_id=tag_id, file_id=file_id).save()
-    return HttpResponse('success')
+    return JsonResponse({'success': True})
 
 
-def set_tagged(request, file_id):
+def get_file(request, file_id):
+    file = File.objects.filter(id=file_id).first()
+    if file:
+        file.cnt_views += 1
+        file.last_viewed = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        file.save()
+        filepath = '/images/' + file.filename
+        imagedata = open(filepath, 'rb').read()
+        return HttpResponse(imagedata, content_type=mimetypes.guess_type(filepath))
+    return JsonResponse({'success': False})
+
+
+def set_is_tagged(request, file_id):
     file = File.objects.filter(id=file_id)
     if file:
         file.needs_tagging = 0
         file.save()
-    return HttpResponse('success')
+    return JsonResponse({'success': True})
 
 
-def set_not_tagged(request, file_id):
+def set_needs_tagging(request, file_id):
     file = File.objects.filter(id=file_id)
     if file:
         file.needs_tagging = 1
         file.save()
-    return HttpResponse('success')
+    return JsonResponse({'success': True})
 
 
 def get_needs_tagging(request):
-    files = File.objects.filter(needs_tagging=1)
-    files = shuffle(list(files))
-    return HttpResponse('success')
+    data = File.objects.filter(needs_tagging=1).values()
+    count = data.count()
+    data = data[randint(0, count - 1)]
+    return JsonResponse({'success': True, 'data': data})
+
+
+def get_cloud(request):
+    data = Tag.objects.order_by('name').values()
+    data = list(data)
+    return JsonResponse({'success': True, 'data': data})
+
+
+@csrf_exempt
+def new_tag(request):
+    tag_name = request.POST['tag_name']
+    Tag(name=tag_name).save()
+    return JsonResponse({'success': True, 'tag_name': tag_name})

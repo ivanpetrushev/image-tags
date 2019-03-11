@@ -5,8 +5,10 @@ urlpatterns = [
     path('stats/', views.tagstats),
     path('generate_sequence/<cat_ids>', views.generate_sequence),
     path('toggle/<file_id>/<tag_id>', views.toggle),
-    path('set_tagged/<file_id>', views.set_tagged),
-    path('set_not_tagged/<file_id>', views.set_not_tagged),
+    path('set_is_tagged/<file_id>', views.set_is_tagged),
     path('get_needs_tagging', views.get_needs_tagging),
+    path('get_cloud', views.get_cloud),
+    path('get_file/<file_id>', views.get_file),
+    path('new', views.new_tag),
     path('', views.tag),
 ]
