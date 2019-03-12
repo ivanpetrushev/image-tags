@@ -20,7 +20,7 @@ function writeTitle(sMsg){
 }
 
 function loadImage(iFileId){
-    var sUrl = '/file/get/' + iFileId;
+    var sUrl = '/tag/get_file/' + iFileId;
     $("#image_here").attr('src', sUrl);
 
     document.title = iFileId;
@@ -52,11 +52,8 @@ $(document).ready(function(){
         var iCode = evn.keyCode;
         if (iCode == 27){ // ESC
             $.ajax({
-                type: 'POST',
-                url: '/tag/setNotTagged',
-                data: {
-                    file_id: iCurrentFileId
-                }
+                type: 'GET',
+                url: '/tag/set_needs_tagging/' + iCurrentFileId
             })
             writeTitle("MARKED")
         }

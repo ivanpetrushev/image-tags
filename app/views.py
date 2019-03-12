@@ -32,12 +32,13 @@ def generate_sequence(request, cat_ids='rand'):
     else:
         tag_ids = cat_ids.split(',')
 
-    data = FileTag.objects.filter(tag_id__in=tag_ids)
+    data = FileTag.objects.filter(tag_id__in=tag_ids).values_list('file__id', flat=True)
     data = list(data)
-    print(data)
     shuffle(data)
-    print(data)
-    return HttpResponse(' ei go ', tag_ids)
+    context = {
+        'data': data
+    }
+    return render(request, 'app/play.html', context)
 
 
 def toggle(request, file_id, tag_id):
@@ -70,7 +71,7 @@ def set_is_tagged(request, file_id):
 
 
 def set_needs_tagging(request, file_id):
-    file = File.objects.filter(id=file_id)
+    file = File.objects.filter(id=file_id).first()
     if file:
         file.needs_tagging = 1
         file.save()
