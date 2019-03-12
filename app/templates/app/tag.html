@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        {% load static %}
-        <link href="{% static "style.css" %}" rel="stylesheet" type="text/css"/>
+{% extends "./base.html" %}
 
-    </head>
-    <body>
-        <p>
-            <img id="image_here" src="{% static "test.jpg" %}"/>
-        </p>
-        <div id="tagcloud"></div>
-        <input id="newtag" type="text"/>
-
-        <script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}?nc={% now "U" %}"></script>
-        <script type="text/javascript" src="{% static "functions.js" %}?nc={% now "U" %}"></script>
-        <script type="text/javascript" src="{% static "tag_photos.js" %}?nc={% now "U" %}"></script>
-    </body>
-</html>
+{% block content %}
+    {% load static %}
+    <p>
+        <img id="image_here" src="{% static "test.jpg" %}"/>
+    </p>
+    <div id="tagcloud"></div>
+    <input id="newtag" type="text"/>
+{% endblock %}

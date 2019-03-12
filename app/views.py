@@ -70,7 +70,7 @@ def get_file(request, file_id):
 
 
 def set_is_tagged(request, file_id):
-    file = File.objects.filter(id=file_id)
+    file = File.objects.filter(id=file_id).first()
     if file:
         file.needs_tagging = 0
         file.save()
