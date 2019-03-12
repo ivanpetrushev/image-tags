@@ -32,7 +32,14 @@ def generate_sequence(request, cat_ids='rand'):
     else:
         tag_ids = cat_ids.split(',')
 
-    data = FileTag.objects.filter(tag_id__in=tag_ids).values_list('file__id', flat=True)
+    data = None
+    for tag_id in tag_ids:
+        if not data:
+            data = FileTag.objects.filter(tag_id=tag_id).values_list('file__id', flat=True)
+        else:
+            next_data = FileTag.objects.filter(tag_id=tag_id).values_list('file__id', flat=True)
+            # since MySQL doesn't support INTERSECT we need a workaround
+            data = list(set(data) & set(next_data))
     data = list(data)
     shuffle(data)
     context = {
