@@ -15,8 +15,8 @@
             var aSequenceContents = {{ data }};
 
         </script>
-        <script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}"></script>
-        <script type="text/javascript" src="{% static "functions.js" %}"></script>
-        <script type="text/javascript" src="{% static "play_sequence.js" %}"></script>
+        <script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}?nc={% now "U" %}"></script>
+        <script type="text/javascript" src="{% static "functions.js" %}?nc={% now "U" %}"></script>
+        <script type="text/javascript" src="{% static "play_sequence.js" %}?nc={% now "U" %}"></script>
     </body>
 </html>

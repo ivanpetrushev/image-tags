@@ -13,7 +13,7 @@
 
         {% if tags %}
             {% for tag in tags %}
-                <input type="checkbox" attr-tag-id="{{ tag.id }}"/> {{ tag.num_tags }} -
+                <input type="checkbox" data-tag-id="{{ tag.id }}"/> {{ tag.num_tags }} -
                 <a href="/tag/generate_sequence/{{ tag.id }}">{{ tag.name }}</a><br/>
             {% endfor %}
         {% endif %}
@@ -21,8 +21,8 @@
         <input type='button' value='Send' onClick='submitCheckboxes();'/>
 
 
-        <script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}"></script>
-        <script type="text/javascript" src="{% static "functions.js" %}"></script>
-        <script type="text/javascript" src="{% static "show_stats.js" %}"></script>
+        <script type="text/javascript" src="{% static "jquery-2.2.3.min.js" %}?nc={% now "U" %}"></script>
+        <script type="text/javascript" src="{% static "functions.js" %}?nc={% now "U" %}"></script>
+        <script type="text/javascript" src="{% static "show_stats.js" %}?nc={% now "U" %}"></script>
     </body>
 </html>
