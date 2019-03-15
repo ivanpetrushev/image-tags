@@ -94,32 +94,24 @@ if ($('.image_workspace').length > 0) {
             })
         })
 
-        // преоразмеряване на картинката по време на зареждането ѝ
+        // autoscale image at load time
         $("#image_here").load(function(){
             $(this).removeAttr('width');
             $(this).removeAttr('height');
 
-            var iWidth = $("#image_here").width();
-            var iHeight = $("#image_here").height();
-            var fRatio = parseFloat(iWidth / iHeight);
-
             var iMaxWidth = window.innerWidth - 10;
-            var iMaxHeight = window.innerHeight - 300;
+            var iMaxHeight = window.innerHeight - 200;
 
-            var iDeltaWidth = iWidth - iMaxWidth;
-            var iDeltaHeight = iHeight - iMaxHeight;
+            // get image original dimensions
+            var iWidth = $("#image_here")[0].naturalWidth;
+            var iHeight = $("#image_here")[0].naturalHeight;
 
-            if (iDeltaWidth > iDeltaHeight){
-                $(this).attr('width', iMaxWidth);
-                var fCorrection = iWidth / iMaxWidth;
-                $(this).attr('height', iHeight / fCorrection);
-            }
-            else {
-                $(this).attr('height', iMaxHeight);
-                var fCorrection = iHeight / iMaxHeight;
-                $(this).attr('width', iWidth / fCorrection)
-            }
+            var fRatio = Math.min(iMaxWidth / iWidth, iMaxHeight / iHeight);
+            var iNewWidth = iWidth * fRatio;
+            var iNewHeight = iHeight * fRatio;
 
+            $(this).width(iNewWidth + 'px');
+            $(this).height(iNewHeight + 'px');
         });
 
         // добавяне на таг
