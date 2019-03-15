@@ -86,9 +86,11 @@ def set_needs_tagging(request, file_id):
 
 
 def get_needs_tagging(request):
-    data = File.objects.filter(needs_tagging=1).values()
-    count = data.count()
-    data = data[randint(0, count - 1)]
+    files = File.objects.filter(needs_tagging=1).values()
+    count = files.count()
+    data = files[randint(0, count - 1)]
+    tags = FileTag.objects.filter(file_id=data['id']).values_list('tag__id', flat=True)
+    data['files_tags'] = list(tags);
     return JsonResponse({'success': True, 'data': data})
 
 

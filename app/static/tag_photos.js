@@ -1,4 +1,4 @@
-if ($('#image_workspace').len > 0) {
+if ($('.image_workspace').length > 0) {
     var aTagLinks = [];
     var iLastFileId = 0;
     var aTagMap = {};
@@ -17,7 +17,7 @@ if ($('#image_workspace').len > 0) {
                 var sName = aTags[i].name;
                 var cNav = aTags[i].navigation;
                 sName = sName.charAt(0).toUpperCase() + sName.slice(1) + " ";
-                var oNewLink = $(' <a class="tag" title="' + sName + '"/>').
+                var oNewLink = $(' <a href="#" class="tag" title="' + sName + '"/>').
                     text(sName).
                     attr('tag_id', aTags[i].id);
 
@@ -85,7 +85,7 @@ if ($('#image_workspace').len > 0) {
 
                     var bTagFound = false;
                     for (var j in aTags){
-                        if (aTags[j].tag_id == iThisTagId) bTagFound = true;
+                        if (aTags[j] == iThisTagId) bTagFound = true;
                     }
                     if (bTagFound){
                         aTagLinks[i].addClass('tag_selected')
