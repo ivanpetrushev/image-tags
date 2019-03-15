@@ -1,14 +1,12 @@
 #tagcloud {
     /*padding: 20px;*/
 }
+/*
 a {
-    /*color: gray;*/
     padding: 2px;
     margin: 5px;
     text-decoration: underline;
-    /*border: 1px solid black;*/
-    cursor: crosshair;
-}
+}*/
 
 #tagcloud a {
     display: block;
