@@ -13,4 +13,16 @@
     {% endif %}
 
     <input type='button' value='Send' onClick='submitCheckboxes();'/>
+
+    <h2>Doublets</h2>
+
+    {% for item in doublets %}
+        {{ item.count }} - <a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a><br/>
+    {% endfor %}
+
+    <h2>Triplets</h2>
+
+    {% for item in triplets %}
+        {{ item.count }} - <a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a><br/>
+    {% endfor %}
 {% endblock %}

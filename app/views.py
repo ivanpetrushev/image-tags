@@ -1,4 +1,6 @@
 import mimetypes
+import pickle
+from itertools import combinations
 from datetime import datetime
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -7,8 +9,8 @@ from django.db.models import Count
 from django.template import loader
 from random import randint, shuffle
 from django.views.decorators.csrf import csrf_exempt
-
-# Create your views here.
+from collections import defaultdict
+from django.core.cache import cache
 
 
 def tag(request):
@@ -17,9 +19,15 @@ def tag(request):
 
 
 def tagstats(request):
+    # get generic tag -> count stats
     tags = Tag.objects.annotate(num_tags=Count('filetag')).order_by('-num_tags')
+
+    # get doublets and triplets
+    (doublets, triplets) = generate_doublets_triplets()
     context = {
-        'tags': tags
+        'tags': tags,
+        'doublets': doublets,
+        'triplets': triplets
     }
     return render(request, 'app/index.html', context)
 
@@ -105,3 +113,72 @@ def new_tag(request):
     tag_name = request.POST['tag_name']
     Tag(name=tag_name).save()
     return JsonResponse({'success': True, 'tag_name': tag_name})
+
+
+def generate_doublets_triplets():
+    # try cache first
+    doublets_pickled = cache.get('doublets_pickled')
+    triplets_pickled = cache.get('triplets_pickled')
+    if doublets_pickled is None or triplets_pickled is None:
+        # cache miss
+        all_doublets = defaultdict(int)
+        all_triplets = defaultdict(int)
+        files = File.objects.all()
+        for file in files:
+            filetags = file.filetag_set.all()
+            tagids = list(filetags.values_list('tag_id', flat=True))
+            sorted(tagids)
+            doublets = list(combinations(tagids, 2))
+            triplets = list(combinations(tagids, 3))
+            for doublet in doublets:
+                commadoublet = ','.join(str(i) for i in doublet)
+                all_doublets[commadoublet] += 1
+            for triplet in triplets:
+                commatriplet = ','.join(str(i) for i in triplet)
+                all_triplets[commatriplet] += 1
+
+        sorted_doublets = sorted(all_doublets, key=all_doublets.get, reverse=True)
+        ready_doublets = {}
+        for i in range(10):
+            doublet_key = sorted_doublets[i]
+            ready_doublets[doublet_key] = all_doublets[doublet_key]
+
+        sorted_triplets = sorted(all_triplets, key=all_triplets.get, reverse=True)
+        ready_triplets = {}
+        for i in range(10):
+            triplet_key = sorted_triplets[i]
+            ready_triplets[triplet_key] = all_triplets[triplet_key]
+
+        doublets_pickled = pickle.dumps(ready_doublets)
+        triplets_pickled = pickle.dumps(ready_triplets)
+
+        # cache will timeouts in 2 days
+        timeout = 3600 * 24 * 2
+        cache.set('doublets_pickled', doublets_pickled, timeout)
+        cache.set('triplets_pickled', triplets_pickled, timeout)
+
+    # cache is all set and we already have encoded results
+    doublets_encoded = pickle.loads(doublets_pickled)
+    triplets_encoded = pickle.loads(triplets_pickled)
+    # {'2,30,31': 345, '7,22,23': 341, '18,30,31': 319, '22,23,24': 313, '7,22,24': 280}
+
+    doublets = []
+    for tags_commas, count in doublets_encoded.items():
+        tag_ids = tags_commas.split(',')
+        tag_names = list(Tag.objects.filter(id__in=tag_ids).values_list('name', flat=True))
+        doublets.append({
+            'tag_ids': tag_ids,
+            'tag_names': tag_names,
+            'count': count
+        })
+    triplets = []
+    for tags_commas, count in triplets_encoded.items():
+        tag_ids = tags_commas.split(',')
+        tag_names = list(Tag.objects.filter(id__in=tag_ids).values_list('name', flat=True))
+        triplets.append({
+            'tag_ids': tag_ids,
+            'tag_names': tag_names,
+            'count': count
+        })
+
+    return doublets, triplets
