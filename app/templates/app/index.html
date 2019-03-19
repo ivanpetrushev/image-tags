@@ -5,24 +5,31 @@
 
     <a href='/tag/generate_sequence/rand'>Random</a><br/>
 
-    {% if tags %}
-        {% for tag in tags %}
-            <input type="checkbox" data-tag-id="{{ tag.id }}"/> {{ tag.num_tags }} -
-            <a href="/tag/generate_sequence/{{ tag.id }}">{{ tag.name }}</a><br/>
-        {% endfor %}
-    {% endif %}
+    {% for tag in tags %}
+    <div>
+        <span><input type="checkbox" data-tag-id="{{ tag.id }}"/></span>
+        <span>{{ tag.num_tags }} -</span>
+        <span><a href="/tag/generate_sequence/{{ tag.id }}">{{ tag.name }}</a></span>
+    </div>
+    {% endfor %}
 
     <input type='button' value='Send' onClick='submitCheckboxes();'/>
 
     <h2>Doublets</h2>
 
     {% for item in doublets %}
-        {{ item.count }} - <a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a><br/>
+        <div>
+            <span>{{ item.count }} -</span>
+            <span><a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a></span>
+        </div>
     {% endfor %}
 
     <h2>Triplets</h2>
 
     {% for item in triplets %}
-        {{ item.count }} - <a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a><br/>
+        <div>
+            <span>{{ item.count }} -</span>
+            <span><a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a><br/></span>
+        </div>
     {% endfor %}
 {% endblock %}
