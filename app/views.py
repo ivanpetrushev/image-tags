@@ -97,8 +97,19 @@ def get_needs_tagging(request):
     files = File.objects.filter(needs_tagging=1).values()
     count = files.count()
     data = files[randint(0, count - 1)]
-    tags = FileTag.objects.filter(file_id=data['id']).values_list('tag__id', flat=True)
-    data['files_tags'] = list(tags);
+    tag_ids = FileTag.objects.filter(file_id=data['id']).values_list('tag__id', flat=True)
+    data['files_tags'] = list(tag_ids)
+
+    # prepare to load tags in Tagify format
+    tags_tagify = []
+    filetags = FileTag.objects.filter(file_id=data['id'])
+    for filetag in filetags:
+        tags_tagify.append({
+            'id': filetag.tag.id,
+            'value': filetag.tag.name.title()
+        })
+    data['files_tags_tagify'] = tags_tagify
+
     return JsonResponse({'success': True, 'data': data})
 
 

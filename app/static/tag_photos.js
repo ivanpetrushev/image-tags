@@ -3,6 +3,46 @@ if ($('.image_workspace').length > 0) {
     var iLastFileId = 0;
     var aTagMap = {};
 
+    var bTagifyEventsEnabled = false;
+    var inputTagify = document.querySelector('input[name=tags-outside]'),
+    tagify = new Tagify(inputTagify, {
+        delimiters: ", ",
+        dropdown: {
+            enabled: 1,
+        },
+        callbacks: {
+            add: function(e) {
+                if (! bTagifyEventsEnabled) {
+                    return;
+                }
+                var iTagId = e.detail.data.id;
+                var iFileId = $("#image_here").attr('file_id');
+                if (typeof iFileId != 'undefined') {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/tag/toggle/' + iFileId + '/' + iTagId
+                    })
+                    $('a[tag_id="'+iTagId+'"]').toggleClass('tag_selected');
+                }
+            },
+            remove: function(e) {
+                if (! bTagifyEventsEnabled) {
+                    return;
+                }
+                var iTagId = e.detail.data.id;
+                var iFileId = $("#image_here").attr('file_id');
+                if (typeof iFileId != 'undefined') {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/tag/toggle/' + iFileId + '/' + iTagId
+                    })
+                    $('a[tag_id="'+iTagId+'"]').toggleClass('tag_selected');
+                }
+            },
+        }
+    });
+
+
     function refreshTagcloud(){
         $("#tagcloud").empty();
         $.ajax({
@@ -12,11 +52,12 @@ if ($('.image_workspace').length > 0) {
         }).done(function(res){
             // res = jQuery.parseJSON(res);
             var aTags = res.data;
+            var aWhitelist = [];
             for (var i in aTags){
                 if (typeof aTags[i] == 'function') continue;
                 var sName = aTags[i].name;
                 var cNav = aTags[i].navigation;
-                sName = sName.charAt(0).toUpperCase() + sName.slice(1) + " ";
+                sName = sName.charAt(0).toUpperCase() + sName.slice(1) + "";
                 var oNewLink = $(' <a href="#" class="tag" title="' + sName + '"/>').
                     text(sName).
                     attr('tag_id', aTags[i].id);
@@ -33,17 +74,35 @@ if ($('.image_workspace').length > 0) {
                 oNewLink.click(function(e){
                     e.preventDefault();
                     $(this).toggleClass('tag_selected');
-                    //var iTagId = evn.currentTarget.attributes[0].value;
                     var iTagId = $(this).attr('tag_id');
                     var iFileId = $("#image_here").attr('file_id');
                     $.ajax({
                         type: 'GET',
                         url: '/tag/toggle/' + iFileId + '/' + iTagId
                     })
+
+                    // update tagify
+                    var oTagifyTag = {
+                        id: iTagId,
+                        value: $(this).attr('title')
+                    }
+                    bTagifyEventsEnabled = false;
+                    if ($(this).hasClass('tag_selected')) {
+                        tagify.addTags([oTagifyTag]);
+                    } else {
+                        tagify.removeTag(oTagifyTag.value);
+                    }
+                    bTagifyEventsEnabled = true;
                 })
 
                 $('#tagcloud').append(oNewLink);
+
+                aWhitelist.push({
+                    value: sName,
+                    id: aTags[i].id
+                })
             }
+            tagify.settings.whitelist = aWhitelist;
 
         })
     }
@@ -91,6 +150,11 @@ if ($('.image_workspace').length > 0) {
                         aTagLinks[i].addClass('tag_selected')
                     }
                 }
+
+                tagify.removeAllTags();
+                bTagifyEventsEnabled = false;
+                tagify.addTags(res.files_tags_tagify)
+                bTagifyEventsEnabled = true;
             })
         })
 
@@ -132,7 +196,23 @@ if ($('.image_workspace').length > 0) {
             }
         })
 
+        // toggle tag on keypress in page body
+        // if keypress is in text input, ignore it
         $(document).keypress(function(e){
+            var bInputFocused = $('input:focus').length;
+            if (bInputFocused) {
+                return;
+            }
+
+            if (e.keyCode == 32) {
+                $('.tagify__input').focus();
+            }
+
+            bInputFocused = $('.tagify__input:focus').length;
+            if (bInputFocused) {
+                return;
+            }
+
             if (e.keyCode == 13){
                 $("#image_here").trigger('click');
                 return;
