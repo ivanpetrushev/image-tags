@@ -21,11 +21,13 @@ def tag(request):
 def tagstats(request):
     # get generic tag -> count stats
     tags = Tag.objects.annotate(num_tags=Count('filetag')).order_by('-num_tags')
+    tag_chunks = list(chunks(tags, 5))
 
     # get doublets and triplets
     (doublets, triplets) = generate_doublets_triplets()
     context = {
         'tags': tags,
+        'tag_chunks': tag_chunks,
         'doublets': doublets,
         'triplets': triplets
     }
@@ -193,3 +195,10 @@ def generate_doublets_triplets():
         })
 
     return doublets, triplets
+
+# Create a function called "chunks" with two arguments, l and n:
+def chunks(l, n):
+    # For item i in a range that is a length of l,
+    for i in range(0, len(l), n):
+        # Create an index range for l of n items:
+        yield l[i:i+n]
