@@ -17,25 +17,36 @@
         {% endfor %}
         </div>
     {% endfor %}
+        <input type='button' value='Send' onClick='submitCheckboxes();'/>
     </div>
 
-    <input type='button' value='Send' onClick='submitCheckboxes();'/>
 
-    <h2>Doublets</h2>
-
-    {% for item in doublets %}
-        <div>
-            <span>{{ item.count }} -</span>
-            <span><a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a></span>
+    <div class="container">
+        <h2>Doublets</h2>
+        {% for chunk in doublets_chunks %}
+        <div class="row">
+            {% for item in chunk %}
+            <div class="col">
+                <span>{{ item.count }} -</span>
+                <span><a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a></span>
+            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 
-    <h2>Triplets</h2>
 
-    {% for item in triplets %}
-        <div>
-            <span>{{ item.count }} -</span>
-            <span><a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:',' }}</a><br/></span>
+    <div class="container">
+        <h2>Triplets</h2>
+        {% for chunk in triplets_chunks %}
+        <div class="row">
+            {% for item in chunk %}
+                <div class="col">
+                    <span>{{ item.count }} -</span>
+                    <span><a href="/tag/generate_sequence/{{ item.tag_ids|join:',' }}">{{ item.tag_names|join:', ' }}</a><br/></span>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 {% endblock %}

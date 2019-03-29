@@ -1,5 +1,6 @@
 import mimetypes
 import pickle
+import numpy
 from itertools import combinations
 from datetime import datetime
 from django.shortcuts import render
@@ -21,15 +22,23 @@ def tag(request):
 def tagstats(request):
     # get generic tag -> count stats
     tags = Tag.objects.annotate(num_tags=Count('filetag')).order_by('-num_tags')
-    tag_chunks = list(chunks(tags, 5))
+    tag_chunks = numpy.array_split(tags, 5)
+    tag_chunks = numpy.array(tag_chunks).transpose()
 
     # get doublets and triplets
     (doublets, triplets) = generate_doublets_triplets()
+    doublets_chunks = numpy.array_split(doublets, 5)
+    doublets_chunks = numpy.array(doublets_chunks).transpose()
+    triplets_chunks = numpy.array_split(triplets, 3)
+    triplets_chunks = numpy.array(triplets_chunks).transpose()
+
     context = {
         'tags': tags,
         'tag_chunks': tag_chunks,
         'doublets': doublets,
-        'triplets': triplets
+        'doublets_chunks': doublets_chunks,
+        'triplets': triplets,
+        'triplets_chunks': triplets_chunks
     }
     return render(request, 'app/index.html', context)
 
@@ -152,13 +161,13 @@ def generate_doublets_triplets():
 
         sorted_doublets = sorted(all_doublets, key=all_doublets.get, reverse=True)
         ready_doublets = {}
-        for i in range(10):
+        for i in range(30):
             doublet_key = sorted_doublets[i]
             ready_doublets[doublet_key] = all_doublets[doublet_key]
 
         sorted_triplets = sorted(all_triplets, key=all_triplets.get, reverse=True)
         ready_triplets = {}
-        for i in range(10):
+        for i in range(30):
             triplet_key = sorted_triplets[i]
             ready_triplets[triplet_key] = all_triplets[triplet_key]
 
