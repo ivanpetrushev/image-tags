@@ -22,7 +22,7 @@ def tag(request):
 def tagstats(request):
     # get generic tag -> count stats
     tags = Tag.objects.annotate(num_tags=Count('filetag')).order_by('-num_tags')
-    tag_chunks = numpy.array_split(tags, 5)
+    tag_chunks = numpy.array_split(tags, 20)
     tag_chunks = numpy.array(tag_chunks).transpose()
 
     # get doublets and triplets
@@ -41,6 +41,27 @@ def tagstats(request):
         'triplets_chunks': triplets_chunks
     }
     return render(request, 'app/index.html', context)
+
+
+@csrf_exempt
+def get_counts(request):
+    data = {}
+    selected_tags = request.POST.getlist('selected_tags[]', [])
+    file_ids = None
+    for tag_id in selected_tags:
+        if not file_ids:
+            file_ids = FileTag.objects.filter(tag_id=tag_id).values_list('file__id', flat=True)
+        else:
+            next_data = FileTag.objects.filter(tag_id=tag_id).values_list('file__id', flat=True)
+            # since MySQL doesn't support INTERSECT we need a workaround
+            file_ids = list(set(file_ids) & set(next_data))
+    file_ids = list(file_ids)
+    tags = FileTag.objects.filter(file_id__in=file_ids).values_list('tag_id', flat=True)
+    for tag_id in tags:
+        if not tag_id in data:
+            data[tag_id] = 0
+        data[tag_id] += 1
+    return JsonResponse({'success': True, 'data': data})
 
 
 def generate_sequence(request, cat_ids='rand'):

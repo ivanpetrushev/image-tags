@@ -9,6 +9,7 @@ urlpatterns = [
     path('get_needs_tagging', views.get_needs_tagging),
     path('set_needs_tagging/<file_id>', views.set_needs_tagging),
     path('get_cloud', views.get_cloud),
+    path('get_counts', views.get_counts),
     path('get_file/<file_id>', views.get_file),
     path('new', views.new_tag),
     path('', views.tag),

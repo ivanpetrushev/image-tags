@@ -31,3 +31,12 @@ a {
     font-size:xx-small; 
     vertical-align:top;
 }
+
+.col.active {
+
+}
+
+.col.inactive,
+.col.inactive a {
+    color: #bbb;
+}
